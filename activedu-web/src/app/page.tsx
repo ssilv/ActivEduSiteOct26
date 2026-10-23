@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { club } from "@/config/constants";
+import { club, mapUrl, socialLinks } from "@/config/constants";
 import { AboutSection } from "@/components/AboutSection";
 import { CompetitionsSection } from "@/components/CompetitionsSection";
 import { ContactSection } from "@/components/ContactSection";
@@ -20,6 +20,13 @@ const structuredData = {
     addressLocality: club.city,
     addressCountry: "RO",
   },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: club.latitude,
+    longitude: club.longitude,
+  },
+  hasMap: mapUrl,
+  sameAs: socialLinks.map((item) => item.href),
 };
 
 export default function HomePage() {

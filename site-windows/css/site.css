@@ -339,7 +339,17 @@ h1 span { display: block; margin-top: 0.4rem; color: var(--sky); }
 .facts dt { font-weight: 700; }
 .facts dd { margin: 0.2rem 0 0; color: #334155; }
 .facts ul { margin: 0.2rem 0 0; padding: 0; list-style: none; }
-.facts a { color: var(--blue-deep); font-weight: 700; }
+.facts a { color: var(--blue-deep); font-weight: 700; overflow-wrap: anywhere; }
+.map-frame { margin-top: 1.25rem; }
+.map-frame iframe {
+  display: block;
+  width: 100%;
+  height: 16rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: #e2e8f0;
+}
+.map-open { display: inline-block; margin-top: 0.65rem; color: var(--blue-deep); font-weight: 700; }
 address { font-style: normal; }
 
 .form-card {

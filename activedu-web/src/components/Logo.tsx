@@ -28,8 +28,7 @@ export function Logo({ className = "" }: LogoProps) {
         <circle cx="18" cy="20.5" r="1.8" fill="#F8FAFC" />
       </svg>
       <span className="font-display text-lg font-semibold tracking-tight text-white">
-        Activ
-        <span className="text-sky-300">Edu</span>
+        Activ<span className="text-sky-300">Edu</span>
       </span>
     </span>
   );

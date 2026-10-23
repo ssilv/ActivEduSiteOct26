@@ -45,12 +45,18 @@ export const club = {
   ],
   description:
     "Club educațional de robotică și programare pentru copii și adolescenți, în Buzău.",
+  latitude: 45.153858100424756,
+  longitude: 26.821617064882787,
 } as const;
 
+const mapQuery = `${club.latitude},${club.longitude}`;
+
+export const mapUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
+
+export const mapEmbedUrl = `https://maps.google.com/maps?q=${mapQuery}&z=17&hl=ro&output=embed`;
+
 export const socialLinks: { label: string; href: string }[] = [
-  // { label: "Instagram", href: "https://instagram.com/activedu" },
-  // { label: "Facebook", href: "https://facebook.com/activedu" },
-  // { label: "YouTube", href: "https://youtube.com/@activedu" },
+  { label: "Facebook", href: "https://www.facebook.com/ActiveEdu1" },
 ];
 
 export const navLinks = [

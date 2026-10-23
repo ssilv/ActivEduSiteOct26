@@ -81,7 +81,7 @@ export function Footer() {
             <ul className="mt-4 flex flex-wrap gap-3 text-sm">
               {visibleSocials.map((item) => (
                 <li key={item.label}>
-                  <a href={item.href} className="hover:text-white">
+                  <a href={item.href} className="hover:text-white" target="_blank" rel="noopener noreferrer">
                     {item.label}
                   </a>
                 </li>

@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
-import { club, courses } from "@/config/constants";
+import { club, courses, mapEmbedUrl, mapUrl, socialLinks } from "@/config/constants";
 import { submitEnrollment } from "@/app/actions/enrollment";
 import {
   initialEnrollmentState,
@@ -102,7 +102,41 @@ export function ContactSection() {
                 </dd>
               </div>
             ) : null}
+            {socialLinks
+              .filter((item) => item.href.startsWith("http"))
+              .map((item) => (
+                <div key={item.href}>
+                  <dt className="font-semibold text-slate-900">{item.label}</dt>
+                  <dd className="mt-1">
+                    <a
+                      href={item.href}
+                      className="font-semibold text-blue-700 hover:text-blue-800"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {item.href.replace(/^https?:\/\/(www\.)?/, "")}
+                    </a>
+                  </dd>
+                </div>
+              ))}
           </dl>
+          <div className="mt-6">
+            <iframe
+              title="Harta cu locația ActivEdu din Buzău"
+              src={mapEmbedUrl}
+              className="h-64 w-full rounded-2xl border border-slate-200"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+            <a
+              href={mapUrl}
+              className="mt-2 inline-block text-sm font-semibold text-blue-700 hover:text-blue-800"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Deschide în Google Maps
+            </a>
+          </div>
         </div>
 
         <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
