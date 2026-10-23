@@ -238,8 +238,8 @@ altfel:
           </div>
         </div>
         <div class="form-card" data-form-card>
-          <form id="inscriere" action="#contact" method="post" novalidate>
-            <p class="form-note">Câmpurile marcate cu * sunt obligatorii. La trimitere se deschide un email către club, pe care îl trimiți din programul tău de mail.</p>
+          <form id="inscriere" action="contact.aspx" method="post" novalidate>
+            <p class="form-note">Câmpurile marcate cu * sunt obligatorii. Cererea se trimite pe emailul clubului.</p>
             <p class="form-alert error" role="alert" data-form-alert hidden></p>
             <div class="form-split">
               <div>
@@ -256,12 +256,12 @@ altfel:
             <div class="form-split">
               <div>
                 <label for="age">Vârsta copilului <em>*</em></label>
-                <input id="age" name="age" type="number" inputmode="numeric" min="6" max="19" required>
+                <input id="age" name="age" type="text" inputmode="numeric" maxlength="2" required>
                 <p class="field-error" data-error="age"></p>
               </div>
               <div>
                 <label for="phone">Telefon <em>*</em></label>
-                <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required maxlength="20" placeholder="07xx xxx xxx">
+                <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required maxlength="32" placeholder="07xx xxx xxx">
                 <p class="field-error" data-error="phone"></p>
               </div>
             </div>
@@ -285,6 +285,10 @@ altfel:
               <label for="message">Mesaj <span class="opt">(opțional)</span></label>
               <textarea id="message" name="message" rows="4" maxlength="1000"></textarea>
               <p class="field-error" data-error="message"></p>
+            </div>
+            <div class="hp" aria-hidden="true">
+              <label for="ae_leave_blank">Nu completa</label>
+              <input id="ae_leave_blank" name="ae_leave_blank" type="text" tabindex="-1" autocomplete="off" value="">
             </div>
             <button class="btn btn-primary" type="submit">Trimite cererea de demo</button>
           </form>

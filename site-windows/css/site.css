@@ -350,6 +350,7 @@ h1 span { display: block; margin-top: 0.4rem; color: var(--sky); }
   background: #e2e8f0;
 }
 .map-open { display: inline-block; margin-top: 0.65rem; color: var(--blue-deep); font-weight: 700; }
+.hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
 address { font-style: normal; }
 
 .form-card {

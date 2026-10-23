@@ -37,7 +37,7 @@ export const initialEnrollmentState: EnrollmentState = {
   delivered: false,
 };
 
-const personName = /^[\p{L}][\p{L}\s.'-]{1,79}$/u;
+const personName = /^.{2,80}$/;
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 function readText(formData: FormData, key: string): string {
@@ -46,10 +46,15 @@ function readText(formData: FormData, key: string): string {
 }
 
 export function isRomanianPhone(value: string): boolean {
-  const digits = value.replace(/\D/g, "");
-  if (digits.length === 10 && digits.startsWith("0")) return true;
-  if (digits.length === 11 && digits.startsWith("40")) return true;
-  return false;
+  let digits = value.replace(/\D/g, "");
+  if (digits.startsWith("0040")) digits = `0${digits.slice(4)}`;
+  else if (digits.startsWith("40") && digits.length === 11) digits = `0${digits.slice(2)}`;
+  else if (digits.length === 9 && /^[237]/.test(digits)) digits = `0${digits}`;
+  return /^0\d{9}$/.test(digits);
+}
+
+function isPersonName(value: string): boolean {
+  return personName.test(value) && /\p{L}/u.test(value) && !/[0-9<>]/.test(value);
 }
 
 export type ParsedEnrollment =
@@ -75,16 +80,16 @@ export function parseEnrollment(formData: FormData): ParsedEnrollment {
   const email = readText(formData, "email");
   const message = readText(formData, "message");
 
-  if (!personName.test(parentName)) {
-    fieldErrors.parentName = "Completează numele părintelui.";
+  if (!isPersonName(parentName)) {
+    fieldErrors.parentName = "Completează numele părintelui, fără cifre.";
   }
-  if (!personName.test(childName)) {
-    fieldErrors.childName = "Completează numele copilului.";
+  if (!isPersonName(childName)) {
+    fieldErrors.childName = "Completează numele copilului, fără cifre.";
   }
 
-  const age = Number(ageRaw);
-  if (!ageRaw || !Number.isInteger(age) || age < 6 || age > 18) {
-    fieldErrors.age = "Introdu o vârstă între 6 și 18 ani.";
+  const age = Number(ageRaw.replace(/\D/g, ""));
+  if (!ageRaw || !Number.isInteger(age) || age < 6 || age > 19) {
+    fieldErrors.age = "Introdu o vârstă între 6 și 19 ani.";
   }
 
   const course = courseById(courseId);
@@ -92,7 +97,7 @@ export function parseEnrollment(formData: FormData): ParsedEnrollment {
     fieldErrors.course = "Alege un curs.";
   }
 
-  if (phone.length > 20 || !isRomanianPhone(phone)) {
+  if (phone.length > 32 || !isRomanianPhone(phone)) {
     fieldErrors.phone = "Introdu un număr de telefon valid, de exemplu 0722 123 456.";
   }
 

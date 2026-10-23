@@ -203,7 +203,7 @@ export function ContactSection() {
                     type="number"
                     inputMode="numeric"
                     min={6}
-                    max={18}
+                    max={19}
                     required
                     className={fieldClass}
                     aria-invalid={Boolean(state.fieldErrors.age)}
@@ -218,7 +218,7 @@ export function ContactSection() {
                     inputMode="tel"
                     autoComplete="tel"
                     required
-                    maxLength={20}
+                    maxLength={32}
                     placeholder="07xx xxx xxx"
                     className={fieldClass}
                     aria-invalid={Boolean(state.fieldErrors.phone)}

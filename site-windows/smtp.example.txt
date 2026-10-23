@@ -1,0 +1,14 @@
+# Copiază acest fișier ca smtp.config, în același folder.
+# Pune parola căsuței contact@activedu.ro după semnul =, pe același rând.
+# smtp.config nu se urcă pe git. Îl încarci prin FTP odată cu site-ul.
+# LiveHosting: serverul este mail.activedu.ro. Portul 587 folosește SSL (STARTTLS),
+# varianta pe care o acceptă componenta de email din Windows.
+host=mail.activedu.ro
+port=587
+user=contact@activedu.ro
+password=
+from=contact@activedu.ro
+to=contact@activedu.ro
+# Opțional. Copie ascunsă. Mai multe adrese se despart prin virgulă.
+bcc=
+ssl=true

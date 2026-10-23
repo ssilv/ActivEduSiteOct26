@@ -62,18 +62,34 @@
     return field ? String(field.value).trim() : "";
   }
 
-  function phoneOk(phone) {
+  function nameOk(name) {
+    if (name.length < 2 || name.length > 80) return false;
+    if (/[0-9<>]/.test(name)) return false;
+    try {
+      return /\p{L}/u.test(name);
+    } catch (ignore) {
+      return true;
+    }
+  }
+
+  function phoneDigits(phone) {
     var digits = phone.replace(/\D/g, "");
-    return (digits.length === 10 && digits.charAt(0) === "0") || (digits.length === 11 && digits.indexOf("40") === 0);
+    if (digits.indexOf("0040") === 0) digits = "0" + digits.slice(4);
+    else if (digits.indexOf("40") === 0 && digits.length === 11) digits = "0" + digits.slice(2);
+    else if (digits.length === 9 && /^[237]/.test(digits)) digits = "0" + digits;
+    return digits;
+  }
+
+  function phoneOk(phone) {
+    return /^0\d{9}$/.test(phoneDigits(phone));
   }
 
   form.addEventListener("submit", function (event) {
     event.preventDefault();
     var errors = {};
-    var nameOk = /^\p{L}[\p{L}\s.'-]{1,79}$/u;
-    if (!nameOk.test(value("parentName"))) errors.parentName = "Completează numele părintelui.";
-    if (!nameOk.test(value("childName"))) errors.childName = "Completează numele copilului.";
-    var age = Number(value("age"));
+    if (!nameOk(value("parentName"))) errors.parentName = "Completează numele părintelui, fără cifre.";
+    if (!nameOk(value("childName"))) errors.childName = "Completează numele copilului, fără cifre.";
+    var age = Number(value("age").replace(/\D/g, ""));
     if (!Number.isInteger(age) || age < 6 || age > 19) errors.age = "Introdu o vârstă între 6 și 19 ani.";
     if (!value("course")) errors.course = "Alege un curs.";
     if (!phoneOk(value("phone"))) errors.phone = "Introdu un număr de telefon valid, de exemplu 0722 123 456.";
@@ -93,54 +109,80 @@
       });
       if (alert) {
         alert.hidden = false;
-        alert.textContent = "Verifică câmpurile marcate și încearcă din nou.";
+        alert.textContent = keys.map(function (key) { return errors[key]; }).join(" ");
       }
       var focus = document.getElementById(keys[0]);
       if (focus) focus.focus();
       return;
     }
 
-    var courseLabel = select.options[select.selectedIndex].text;
-    var body = [
-      "Cerere de lecție demo ActivEdu",
-      "",
-      "Părinte: " + value("parentName"),
-      "Copil: " + value("childName"),
-      "Vârstă: " + value("age"),
-      "Curs: " + courseLabel,
-      "Telefon: " + value("phone"),
-      "Email: " + (email || "—"),
-      "Mesaj: " + (value("message") || "—")
-    ].join("\n");
-    var mailto = "mailto:" + clubEmail
-      + "?subject=" + encodeURIComponent("Lecție demo — " + value("childName"))
-      + "&body=" + encodeURIComponent(body);
-
-    var card = document.querySelector("[data-form-card]");
-    if (!card) return;
-    card.textContent = "";
-    var status = document.createElement("div");
-    status.className = "status";
-    status.setAttribute("role", "status");
-    var kicker = document.createElement("p");
-    kicker.className = "kicker";
-    kicker.textContent = "Email pregătit";
-    var title = document.createElement("h3");
-    title.textContent = "Trimite emailul din programul de mail.";
-    var copy = document.createElement("p");
-    copy.textContent = "Cererea pentru " + value("childName") + " este scrisă către " + clubEmail + ". Apasă Trimite în fereastra de email ca să ajungă la club. Poți suna și la " + (settings.phoneDisplay || "0770 727 722") + ".";
-    var action = document.createElement("p");
-    var link = document.createElement("a");
-    link.className = "btn btn-primary";
-    link.href = "#contact";
-    link.textContent = "Completează din nou";
-    link.addEventListener("click", function () { window.location.reload(); });
-    action.appendChild(link);
-    status.appendChild(kicker);
-    status.appendChild(title);
-    status.appendChild(copy);
-    status.appendChild(action);
-    card.appendChild(status);
-    window.location.href = mailto;
+    var submitButton = form.querySelector("button[type=submit]");
+    if (submitButton) submitButton.disabled = true;
+    if (alert) alert.hidden = true;
+    fetch("contact.aspx", {
+      method: "POST",
+      body: new URLSearchParams(new FormData(form)).toString(),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+      }
+    }).then(function (response) {
+      return response.text().then(function (text) {
+        var payload = null;
+        try { payload = JSON.parse(text); } catch (ignore) { payload = null; }
+        return payload;
+      });
+    }).then(function (payload) {
+      if (submitButton) submitButton.disabled = false;
+      if (!payload || !payload.ok) {
+        var fields = payload && payload.fields ? payload.fields : {};
+        Object.keys(fields).forEach(function (key) {
+          var slot = document.querySelector('[data-error="' + key + '"]');
+          if (slot) slot.textContent = fields[key];
+          var field = document.getElementById(key);
+          if (field) field.setAttribute("aria-invalid", "true");
+        });
+        var fieldMessages = Object.keys(fields).map(function (key) { return fields[key]; });
+        if (alert) {
+          alert.hidden = false;
+          alert.textContent = fieldMessages.length
+            ? fieldMessages.join(" ")
+            : (payload && payload.message
+              ? payload.message
+              : "Nu am putut trimite cererea. Sună la " + (settings.phoneDisplay || "0770 727 722") + ".");
+        }
+        return;
+      }
+      var card = document.querySelector("[data-form-card]");
+      if (!card) return;
+      card.textContent = "";
+      var status = document.createElement("div");
+      status.className = "status";
+      status.setAttribute("role", "status");
+      var kicker = document.createElement("p");
+      kicker.className = "kicker";
+      kicker.textContent = "Cerere trimisă";
+      var title = document.createElement("h3");
+      title.textContent = "Am trimis înscrierea.";
+      var copy = document.createElement("p");
+      copy.textContent = payload.message;
+      var action = document.createElement("p");
+      var link = document.createElement("a");
+      link.className = "btn btn-primary";
+      link.href = "index.html#contact";
+      link.textContent = "Trimite o altă cerere";
+      action.appendChild(link);
+      status.appendChild(kicker);
+      status.appendChild(title);
+      status.appendChild(copy);
+      status.appendChild(action);
+      card.appendChild(status);
+    }).catch(function () {
+      if (submitButton) submitButton.disabled = false;
+      if (alert) {
+        alert.hidden = false;
+        alert.textContent = "Nu am putut trimite cererea. Sună la " + (settings.phoneDisplay || "0770 727 722") + ".";
+      }
+    });
   });
 })();
